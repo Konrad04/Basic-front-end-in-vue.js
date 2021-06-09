@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Catalog</title>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <div class="d-flex flex-wrap justify-content-center">
+            <div class="card" style="width: 25em;  margin:0 auto;">
+                <div class="text-center">
+                    <button type="button" class="btn btn-warning" @click="editData(newGame)">Zmień gre</button>
+                    <button type="button" class="btn btn-danger" @click="deleteData(newGame)">Usuń gre</button>
+                    <button type="button" class="btn btn-success" @click="postData(newGame)">Dodaj gre</button>
+                    <input placeholder="Id" v-model="newGame.Id" type="text">
+                    <input placeholder="Nazwa" v-model="newGame.Nazwa" type="text">
+                    <input placeholder="Rok" v-model="newGame.Rok" type="text">
+                    <input placeholder="Gatunek" v-model="newGame.Gatunek" type="text">
+                    <input placeholder="Nota" v-model="newGame.Nota" type="text">
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex flex-wrap justify-content-center">
+            <div v-for="(g) in game" class="card " style="width: 18em;  margin:0 auto;">   
+                <div class="text-center">
+                <h5 >Tytuł: {{g.Nazwa}}</h5>    
+                        <p>ID: {{g.Id}}</p>
+                        <img class="card-img-top" style="width: 15em; height: 12em; "  :src="'/assets/'+ g.Zdjecie">               
+                        <p>Rok wydania: {{g.Rok}}</p>
+                        <p>Gatunek: {{g.Gatunek.toUpperCase()}}</p>
+                        <p>Ocena: {{g.Nota}}</p>  
+                </div>                          
+            </div>
+        </div>
+    </div>   
+    <script>
+        new Vue({
+             el: "#app",
+             data: {
+                 game: null,
+                 newGame:{
+                     Nazwa:null,
+                     Rok:null,
+                     Gatunek:null,
+                     Nota:null,
+                     Id:null
+                 },
+             },
+             created: function(){
+                 this.game=[ 
+                ]
+
+                fetch('')
+                    .then(response => response.json())
+                    .then(game => this.game = game);
+             },
+             methods:{
+                postData:function(newGame, url = '', data = {Nazwa:newGame.Nazwa, Rok:newGame.Rok, Gatunek:newGame.Gatunek, Nota:newGame.Nota, Zdjecie:newGame.Gatunek+".jpg"}) {
+                const response = fetch(url, {
+                    method: 'POST', 
+                    headers: {
+                    'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data) 
+                });
+                return response.json(); 
+                },
+                
+                deleteData:function(newGame, url = ''+newGame.Id, data = {}) {
+                const response = fetch(url, {
+                    method: 'DELETE', 
+                    headers: {
+                    'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data) 
+                });
+                return response.json(); 
+                },
+
+                editData:function(newGame, url = ''+newGame.Id, data = {Id:newGame.Id, Nazwa:newGame.Nazwa, Rok:newGame.Rok, Gatunek:newGame.Gatunek, Nota:newGame.Nota, Zdjecie:newGame.Gatunek+".jpg"}) {
+                const response = fetch(url, {
+                    method: 'PUT', 
+                    headers: {
+                    'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data) 
+                });
+                return response.json(); 
+                }          
+             }
+        })
+    </script>
+</body>
+</html>
